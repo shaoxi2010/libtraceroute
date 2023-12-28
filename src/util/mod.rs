@@ -108,13 +108,13 @@ impl Channel {
     }
 
     /// Sends a packet
-    pub(crate) fn send_to(&mut self, destination_ip: Ipv4Addr) {
+    pub(crate) fn send_to(&mut self, destination_ip: Ipv4Addr, mtu: usize) {
         let (mut tx, _) = match channel(&self.interface, Default::default()) {
             Ok(pnet::datalink::Channel::Ethernet(tx, rx)) => (tx, rx),
             Ok(_) => panic!("libtraceroute: unhandled util type"),
             Err(e) => panic!("libtraceroute: unable to create util: {}", e),
         };
-        let buf = self.packet_builder.build_packet(destination_ip, self.ttl, self.port + self.seq);
+        let buf = self.packet_builder.build_packet(destination_ip, self.ttl, self.port + self.seq, mtu);
         tx.send_to(&buf, None);
         if self.packet_builder.protocol != Protocol::TCP {
             self.seq += 1;

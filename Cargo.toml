@@ -1,6 +1,6 @@
 [package]
 name = "libtraceroute"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ilya Grishkov <ilyagrishkov@icloud.com>"]
 edition = "2018"
 license = "Apache-2.0"
@@ -12,6 +12,6 @@ keywords = ["traceroute", "networking", "udp", "tcp", "icmp"]
 categories = ["network-anlysis"]
 
 [dependencies]
-pnet = "0.27.2"
-rand = "0.7.3"
+pnet = "0.34.0"
+rand = "0.8.5"
 async-std = "1.9.0"

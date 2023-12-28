@@ -120,6 +120,7 @@ pub struct Config {
     max_hops: u32,
     number_of_queries: u32,
     ttl: u8,
+	mtu: u16,
     timeout: Duration,
     channel: util::Channel,
 }
@@ -142,7 +143,7 @@ pub struct TracerouteQueryResult {
 
 impl Default for Config {
     fn default() -> Self {
-        Config {port: 33434, max_hops: 30, number_of_queries: 3, ttl: 1, timeout: Duration::from_secs(1), channel: Default::default()}
+        Config {port: 33434, max_hops: 30, number_of_queries: 3, ttl: 1, mtu: 80, timeout: Duration::from_secs(1), channel: Default::default()}
     }
 }
 
@@ -188,6 +189,12 @@ impl Config {
         self.timeout = Duration::from_millis(timeout);
         self
     }
+
+	/// Builder: Max Mtu
+	pub fn with_max_mtu(mut self, max_mtu: u16) -> Self {
+		self.mtu = max_mtu;
+		self
+	}
 }
 
 impl Iterator for Traceroute {
@@ -250,7 +257,7 @@ impl Traceroute {
     fn get_next_query_result(&mut self) -> TracerouteQueryResult {
         let now = std::time::SystemTime::now();
 
-        self.config.channel.send_to(self.addr);
+        self.config.channel.send_to(self.addr, self.config.mtu as usize);
         let hop_ip = self.config.channel.recv_timeout(Duration::from_secs(1));
         TracerouteQueryResult {
             rtt: now.elapsed().unwrap_or(Duration::from_millis(0)),
