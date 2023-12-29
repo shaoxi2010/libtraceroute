@@ -113,7 +113,7 @@ impl PacketBuilder {
         ip_header.set_source(source_ip);
         ip_header.set_destination(destination_ip);
         ip_header.set_checksum(pnet::packet::ipv4::checksum(&ip_header.to_immutable()));
-		//tcp header 40
+		//tcp header 20
         let mut tcp_header = MutableTcpPacket::new(ip_header.payload_mut()).unwrap();
 
         tcp_header.set_source(rand::thread_rng().gen_range(49152..65535));
@@ -124,7 +124,7 @@ impl PacketBuilder {
         tcp_header.set_reserved(0);
         tcp_header.set_flags(TcpFlags::SYN);
         tcp_header.set_window(0);
-        tcp_header.set_payload(&vec![0; mtu - 40 - 20 - 14]);
+        tcp_header.set_payload(&vec![0; mtu - 20 - 20 - 14]);
         tcp_header.set_checksum(pnet::packet::tcp::ipv4_checksum(&tcp_header.to_immutable(),
                                                                  &source_ip, &destination_ip));
 
