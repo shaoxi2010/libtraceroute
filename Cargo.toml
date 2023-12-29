@@ -1,6 +1,6 @@
 [package]
 name = "libtraceroute"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Ilya Grishkov <ilyagrishkov@icloud.com>"]
 edition = "2018"
 license = "Apache-2.0"
@@ -15,3 +15,6 @@ categories = ["network-anlysis"]
 pnet = "0.34.0"
 rand = "0.8.5"
 async-std = "1.9.0"
+
+[dev-dependencies]
+clap = "4.4.12"

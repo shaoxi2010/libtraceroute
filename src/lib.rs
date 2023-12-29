@@ -103,13 +103,16 @@ extern crate pnet;
 pub mod util;
 
 use pnet::datalink::NetworkInterface;
+use pnet::util::MacAddr;
 use std::net::Ipv4Addr;
+use std::str::FromStr;
 use std::time::Duration;
 use crate::util::Protocol;
 
 /// Traceroute instance containing destination address and configurations
 pub struct Traceroute {
     addr: Ipv4Addr,
+	mac: MacAddr,
     config: Config,
     done: bool,
 }
@@ -215,9 +218,10 @@ impl Iterator for Traceroute {
 
 impl Traceroute {
     /// Creates new instance of Traceroute
-    pub fn new(addr: Ipv4Addr, config: Config) -> Self {
+    pub fn new(addrstr: &str, macstr: &str, config: Config) -> Self {
         Traceroute {
-            addr,
+            addr: Ipv4Addr::from_str(addrstr).unwrap_or(Ipv4Addr::new(0, 0, 0, 0)),
+			mac: MacAddr::from_str(macstr).unwrap_or(MacAddr::zero()),
             config,
             done: false,
         }
@@ -257,7 +261,7 @@ impl Traceroute {
     fn get_next_query_result(&mut self) -> TracerouteQueryResult {
         let now = std::time::SystemTime::now();
 
-        self.config.channel.send_to(self.addr, self.config.mtu as usize);
+        self.config.channel.send_to(self.mac, self.addr, self.config.mtu as usize);
         let hop_ip = self.config.channel.recv_timeout(Duration::from_secs(1));
         TracerouteQueryResult {
             rtt: now.elapsed().unwrap_or(Duration::from_millis(0)),
